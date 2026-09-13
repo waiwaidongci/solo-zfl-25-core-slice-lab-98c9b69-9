@@ -536,7 +536,7 @@ const stationPage = `<!doctype html>
     const $ = id => document.getElementById(id);
     function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
     function today(){ const d=new Date(Date.now()+60000); return d.toISOString().slice(0,16); }
-    function showError(e){ $("msg").innerHTML = '<div class="err"><b>操作被阻断：</b>\\n'+esc(e.message||e);</div>'; }
+    function showError(e){ $("msg").innerHTML = '<div class="err"><b>操作被阻断：</b><br>'+esc(e.message||e)+'</div>'; }
     function showOk(t){ $("msg").innerHTML = '<div class="okmsg">'+esc(t)+'</div>'; }
 
     function renderResources() {

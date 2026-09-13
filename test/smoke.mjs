@@ -122,7 +122,16 @@ try {
   check("POST /api/samples 建档仍可用", oldCreate.status === 201 && oldCreate.data.id.startsWith("CORE-"));
   const homeHtml = await (await fetch(base + "/")).text();
   check("旧页面 / 仍提供且含切片台链接", homeHtml.includes("/station"));
-  check("新页面 /station 可访问", (await fetch(base + "/station")).ok);
+  const stationHtml = await (await fetch(base + "/station")).text();
+  check("新页面 /station 可访问", !!stationHtml);
+  // 回归：两个页面下发的内联脚本必须能被 JS 引擎解析（防止模板转义导致整页脚本崩溃）
+  const vm = await import("node:vm");
+  for (const [name, html] of [["旧页 /", homeHtml], ["切片台 /station", stationHtml]]) {
+    const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+    let parseOk = true;
+    for (const code of inline) { try { new vm.Script(code); } catch { parseOk = false; } }
+    check(`${name} 内联脚本语法可解析`, parseOk && inline.length > 0);
+  }
 
   // 1) 正常交付
   console.log("\n[场景1：正常交付]");
