@@ -19,3 +19,6 @@ Thumbs.db
 
 .vscode/
 .idea/
+
+test/smoke-db.json
+*.tmp
